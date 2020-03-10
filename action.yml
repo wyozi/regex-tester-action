@@ -1,0 +1,9 @@
+name: "Regex Tester Linker"
+description: "Find regexps from changed files in Pull Requests and link to tester"
+inputs:
+  gh-token:
+    description: "GitHub Token"
+    required: true
+runs:
+  using: "node12"
+  main: "dist/index.js"

@@ -1,0 +1,14 @@
+{
+  "name": "regex-tester-action",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build-dist": "ncc build index.ts"
+  },
+  "dependencies": {
+    "@actions/core": "^1.2.3",
+    "@actions/github": "^2.1.1",
+    "@zeit/ncc": "^0.21.1"
+  }
+}

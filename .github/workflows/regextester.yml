@@ -1,0 +1,13 @@
+on: [pull_request]
+
+jobs:
+  regex_tester:
+    runs-on: ubuntu-latest
+    name: Regex Tester
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Regex Tester
+        uses: ./
+        with:
+          gh-token: ${{ secrets.GITHUB_TOKEN }}
