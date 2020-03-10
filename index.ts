@@ -22,9 +22,11 @@ async function run() {
   ).data.map(file => file.filename);
 
   const modifiedFilesContents = await Promise.all(
-    modifiedPaths.map(async path => (
-      [path, await readFile(path, { encoding: "utf8" })] as [string, string]
-    ))
+    modifiedPaths.map(async path => {
+      const content = await readFile(path, { encoding: "utf8" });
+      console.log(path, content);
+      return [path, content] as [string, string];
+    })
   );
 
   const fileRegexps = modifiedFilesContents.map(([path, content]) => {
