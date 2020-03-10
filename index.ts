@@ -24,16 +24,12 @@ async function run() {
     repo: issue.repo,
     pull_number: issue.number
   });
-  const modifiedPaths: string[] = pull.data.map(file => file.filename);
 
-  const modifiedFilesContents = await Promise.all(
-    modifiedPaths.map(async path => {
-      const content = await readFile(path, { encoding: "utf8" });
-      return [path, content] as [string, string];
-    })
-  );
+  const modifiedPathsPatches = pull.data.map(d => {
+    return [d.filename, d.patch] as [string, string];
+  });
 
-  const fileRegexps = modifiedFilesContents.map(([path, content]) => {
+  const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
     const matches = content.match(META_REGEX_PATTERN);
     return matches?.length > 0 ? [path, matches] as [string, RegExpMatchArray] : null;
   }).filter(x => x !== null);

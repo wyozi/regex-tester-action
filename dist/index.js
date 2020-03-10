@@ -8592,12 +8592,10 @@ function run() {
             repo: issue.repo,
             pull_number: issue.number
         });
-        const modifiedPaths = pull.data.map(file => file.filename);
-        const modifiedFilesContents = yield Promise.all(modifiedPaths.map((path) => __awaiter(this, void 0, void 0, function* () {
-            const content = yield readFile(path, { encoding: "utf8" });
-            return [path, content];
-        })));
-        const fileRegexps = modifiedFilesContents.map(([path, content]) => {
+        const modifiedPathsPatches = pull.data.map(d => {
+            return [d.filename, d.patch];
+        });
+        const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
             var _a;
             const matches = content.match(META_REGEX_PATTERN);
             return ((_a = matches) === null || _a === void 0 ? void 0 : _a.length) > 0 ? [path, matches] : null;
