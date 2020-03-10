@@ -22,4 +22,4 @@ jobs:
 
 ### Example
 
-See https://github.com/wyozi/regex-tester-action/pull/1
+See https://github.com/wyozi/regex-tester-action/pull/1#issuecomment-596914585
