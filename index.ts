@@ -26,6 +26,7 @@ async function run() {
   });
 
   const modifiedPathsPatches = pull.data.map(d => {
+    console.log(d.filename, d.patch);
     return [d.filename, d.patch] as [string, string];
   });
 

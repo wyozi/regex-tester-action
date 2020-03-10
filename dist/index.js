@@ -8593,6 +8593,7 @@ function run() {
             pull_number: issue.number
         });
         const modifiedPathsPatches = pull.data.map(d => {
+            console.log(d.filename, d.patch);
             return [d.filename, d.patch];
         });
         const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
