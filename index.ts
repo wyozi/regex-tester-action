@@ -4,7 +4,7 @@ const util = require("util");
 const fs = require("fs");
 
 const readFile = util.promisify(fs.readFile);
-const META_REGEX_PATTERN = /\/([^\/\n]+)\//g;
+const META_REGEX_PATTERN = /\/([^\/\\\n]*(?:\\.[^\/\\\n]*)*)\//g;
 
 const buildTesterUrl = (pattern: string) => {
   const encoded = encodeURIComponent(pattern);
@@ -31,12 +31,17 @@ async function run() {
 
   const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
     let matches: RegExpMatchArray;
-    const output: string[] = [];
+    let output: string[] = [];
     while (matches = META_REGEX_PATTERN.exec(content)) {
       output.push(matches[1]);
     }
+    output = [...new Set(output)]; // remove duplicates
     return output.length > 0 ? [path, output] as [string, string[]] : null;
   }).filter(x => x !== null);
+
+  if (fileRegexps.length === 0) {
+    return;
+  }
 
   const header = "## Found Regex Patterns";
   const body = `${header}

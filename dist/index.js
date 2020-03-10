@@ -8577,7 +8577,7 @@ const github = __webpack_require__(469);
 const util = __webpack_require__(669);
 const fs = __webpack_require__(747);
 const readFile = util.promisify(fs.readFile);
-const META_REGEX_PATTERN = /\/([^\/\n]+)\//g;
+const META_REGEX_PATTERN = /\/([^\/\\\n]*(?:\\.[^\/\\\n]*)*)\//g;
 const buildTesterUrl = (pattern) => {
     const encoded = encodeURIComponent(pattern);
     return `https://pythex.org/?regex=${encoded}&test_string=&ignorecase=0&multiline=0&dotall=0&verbose=0`;
@@ -8597,12 +8597,16 @@ function run() {
         });
         const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
             let matches;
-            const output = [];
+            let output = [];
             while (matches = META_REGEX_PATTERN.exec(content)) {
                 output.push(matches[1]);
             }
+            output = [...new Set(output)]; // remove duplicates
             return output.length > 0 ? [path, output] : null;
         }).filter(x => x !== null);
+        if (fileRegexps.length === 0) {
+            return;
+        }
         const header = "## Found Regex Patterns";
         const body = `${header}
   ${fileRegexps.map(([path, matches]) => {
