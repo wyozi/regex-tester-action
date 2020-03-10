@@ -8583,13 +8583,17 @@ function run() {
         const issue = github.context.issue;
         const ghToken = core.getInput("gh-token");
         const client = new github.GitHub(ghToken);
-        const modifiedPaths = (yield client.pulls.listFiles({
+        const pull = yield client.pulls.listFiles({
             owner: issue.owner,
             repo: issue.repo,
             pull_number: issue.number
-        })).data.map(file => file.filename);
+        });
+        console.log(pull);
+        const modifiedPaths = pull.data.map(file => file.filename);
         const modifiedFilesContents = yield Promise.all(modifiedPaths.map((path) => __awaiter(this, void 0, void 0, function* () {
-            return ([path, yield readFile(path)]);
+            const content = yield readFile(path, { encoding: "utf8" });
+            console.log(path, content);
+            return [path, content];
         })));
         const fileRegexps = modifiedFilesContents.map(([path, content]) => {
             var _a;

@@ -7,19 +7,21 @@ const readFile = util.promisify(fs.readFile);
 const META_REGEX_PATTERN = /\/([^\/]+)\//g;
 
 async function run() {
+  
   const issue: { owner: string; repo: string; number: number } =
     github.context.issue;
   
   const ghToken = core.getInput("gh-token");
   const client = new github.GitHub(ghToken);
 
-  const modifiedPaths: string[] = (
-    await client.pulls.listFiles({
-      owner: issue.owner,
-      repo: issue.repo,
-      pull_number: issue.number
-    })
-  ).data.map(file => file.filename);
+  const pull = await client.pulls.listFiles({
+    owner: issue.owner,
+    repo: issue.repo,
+    pull_number: issue.number
+  });
+  console.log(pull);
+  
+  const modifiedPaths: string[] = pull.data.map(file => file.filename);
 
   const modifiedFilesContents = await Promise.all(
     modifiedPaths.map(async path => {
