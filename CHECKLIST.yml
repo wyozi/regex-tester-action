@@ -1,0 +1,3 @@
+paths:
+  "*.ts":
+    - Did you update distributable with `yarn build-dist`?
