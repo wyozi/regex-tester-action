@@ -5,8 +5,6 @@ jobs:
     runs-on: ubuntu-latest
     name: Regex Tester
     steps:
-      - name: Checkout
-        uses: actions/checkout@v1
       - name: Regex Tester
         uses: ./
         with:
