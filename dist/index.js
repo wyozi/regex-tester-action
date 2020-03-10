@@ -8577,7 +8577,11 @@ const github = __webpack_require__(469);
 const util = __webpack_require__(669);
 const fs = __webpack_require__(747);
 const readFile = util.promisify(fs.readFile);
-const META_REGEX_PATTERN = /\/([^\/]+)\//g;
+const META_REGEX_PATTERN = /\/([^\/\n]+)\//g;
+const buildTesterUrl = (pattern) => {
+    const encoded = encodeURIComponent(pattern);
+    return `https://pythex.org/?regex=${encoded}&test_string=&ignorecase=0&multiline=0&dotall=0&verbose=0`;
+};
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         const issue = github.context.issue;
@@ -8588,11 +8592,9 @@ function run() {
             repo: issue.repo,
             pull_number: issue.number
         });
-        console.log(pull);
         const modifiedPaths = pull.data.map(file => file.filename);
         const modifiedFilesContents = yield Promise.all(modifiedPaths.map((path) => __awaiter(this, void 0, void 0, function* () {
             const content = yield readFile(path, { encoding: "utf8" });
-            console.log(path, content);
             return [path, content];
         })));
         const fileRegexps = modifiedFilesContents.map(([path, content]) => {
@@ -8600,14 +8602,32 @@ function run() {
             const matches = content.match(META_REGEX_PATTERN);
             return ((_a = matches) === null || _a === void 0 ? void 0 : _a.length) > 0 ? [path, matches] : null;
         }).filter(x => x !== null);
-        yield client.issues.createComment({
+        const header = "## Found Regex Patterns";
+        const body = `${header}
+  ${fileRegexps.map(([path, matches]) => {
+            return `### ${path}\n${matches.map(match => `*${match}* ${buildTesterUrl(match)}`).join("\n")}`;
+        }).join("\n\n")}`;
+        const existingComment = (yield client.issues.listComments({
             owner: issue.owner,
             repo: issue.repo,
-            issue_number: issue.number,
-            body: fileRegexps.map(([path, matches]) => {
-                return `${path}: ${matches.join(", ")}`;
-            }).join("\n")
-        });
+            issue_number: issue.number
+        })).data.find(comment => comment.body.includes(header));
+        if (existingComment) {
+            yield client.issues.updateComment({
+                owner: issue.owner,
+                repo: issue.repo,
+                comment_id: existingComment.id,
+                body
+            });
+        }
+        else {
+            yield client.issues.createComment({
+                owner: issue.owner,
+                repo: issue.repo,
+                issue_number: issue.number,
+                body
+            });
+        }
     });
 }
 run().catch(err => core.setFailed(err.message));

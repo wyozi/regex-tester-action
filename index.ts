@@ -38,7 +38,8 @@ async function run() {
     return matches?.length > 0 ? [path, matches] as [string, RegExpMatchArray] : null;
   }).filter(x => x !== null);
 
-  const body = `## Found Regex Patterns
+  const header = "## Found Regex Patterns";
+  const body = `${header}
   ${fileRegexps.map(([path, matches]) => {
     return `### ${path}\n${
       matches.map(match =>
@@ -47,12 +48,30 @@ async function run() {
     }`;
   }).join("\n\n")}`;
 
-  await client.issues.createComment({
-    owner: issue.owner,
-    repo: issue.repo,
-    issue_number: issue.number,
-    body
-  });
+
+  const existingComment = (
+    await client.issues.listComments({
+      owner: issue.owner,
+      repo: issue.repo,
+      issue_number: issue.number
+    })
+  ).data.find(comment => comment.body.includes(header));
+
+  if (existingComment) {
+    await client.issues.updateComment({
+      owner: issue.owner,
+      repo: issue.repo,
+      comment_id: existingComment.id,
+      body
+    });
+  } else {
+    await client.issues.createComment({
+      owner: issue.owner,
+      repo: issue.repo,
+      issue_number: issue.number,
+      body
+    });
+  }
 }
 
 run().catch(err => core.setFailed(err.message));
