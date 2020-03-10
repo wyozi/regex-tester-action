@@ -7,7 +7,6 @@ const readFile = util.promisify(fs.readFile);
 const META_REGEX_PATTERN = /\/([^\/]+)\//g;
 
 async function run() {
-  
   const issue: { owner: string; repo: string; number: number } =
     github.context.issue;
   
