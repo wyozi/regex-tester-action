@@ -4,7 +4,7 @@ const util = require("util");
 const fs = require("fs");
 
 const readFile = util.promisify(fs.readFile);
-const META_REGEX_PATTERN = /\/([^\/]+)\//g;
+const META_REGEX_PATTERN = /\/([^\/\n]+)\//g;
 
 async function run() {
   
@@ -19,14 +19,11 @@ async function run() {
     repo: issue.repo,
     pull_number: issue.number
   });
-  console.log(pull);
-  
   const modifiedPaths: string[] = pull.data.map(file => file.filename);
 
   const modifiedFilesContents = await Promise.all(
     modifiedPaths.map(async path => {
       const content = await readFile(path, { encoding: "utf8" });
-      console.log(path, content);
       return [path, content] as [string, string];
     })
   );
