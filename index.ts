@@ -23,13 +23,13 @@ async function run() {
 
   const modifiedFilesContents = await Promise.all(
     modifiedPaths.map(async path => (
-      [path, await readFile(path)]
+      [path, await readFile(path, { encoding: "utf8" })] as [string, string]
     ))
   );
 
   const fileRegexps = modifiedFilesContents.map(([path, content]) => {
     const matches = content.match(META_REGEX_PATTERN);
-    return matches?.length > 0 ? [path, matches] : null;
+    return matches?.length > 0 ? [path, matches] as [string, RegExpMatchArray] : null;
   }).filter(x => x !== null);
 
   await client.issues.createComment({
