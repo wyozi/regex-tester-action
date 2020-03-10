@@ -8596,14 +8596,19 @@ function run() {
             return [d.filename, d.patch];
         });
         const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
-            var _a;
-            const matches = content.match(META_REGEX_PATTERN);
-            return ((_a = matches) === null || _a === void 0 ? void 0 : _a.length) > 0 ? [path, matches] : null;
+            let matches;
+            const output = [];
+            while (matches = META_REGEX_PATTERN.exec(content)) {
+                output.push(matches[1]);
+            }
+            return output.length > 0 ? [path, output] : null;
         }).filter(x => x !== null);
         const header = "## Found Regex Patterns";
         const body = `${header}
   ${fileRegexps.map(([path, matches]) => {
-            return `### ${path}\n${matches.map(match => `*${match}* ${buildTesterUrl(match)}`).join("\n")}`;
+            return `### ${path}
+| Pattern | Actions |
+| ------- | ------- |\n${matches.map(match => `| *${match}* | [test](${buildTesterUrl(match)}) |`).join("\n")}`;
         }).join("\n\n")}`;
         const existingComment = (yield client.issues.listComments({
             owner: issue.owner,

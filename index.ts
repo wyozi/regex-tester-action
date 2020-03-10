@@ -30,20 +30,25 @@ async function run() {
   });
 
   const fileRegexps = modifiedPathsPatches.map(([path, content]) => {
-    const matches = content.match(META_REGEX_PATTERN);
-    return matches?.length > 0 ? [path, matches] as [string, RegExpMatchArray] : null;
+    let matches: RegExpMatchArray;
+    const output: string[] = [];
+    while (matches = META_REGEX_PATTERN.exec(content)) {
+      output.push(matches[1]);
+    }
+    return output.length > 0 ? [path, output] as [string, string[]] : null;
   }).filter(x => x !== null);
 
   const header = "## Found Regex Patterns";
   const body = `${header}
   ${fileRegexps.map(([path, matches]) => {
-    return `### ${path}\n${
+    return `### ${path}
+| Pattern | Actions |
+| ------- | ------- |\n${
       matches.map(match =>
-        `*${match}* ${buildTesterUrl(match)}`
+        `| *${match}* | [test](${buildTesterUrl(match)}) |`
       ).join("\n")
     }`;
   }).join("\n\n")}`;
-
 
   const existingComment = (
     await client.issues.listComments({
