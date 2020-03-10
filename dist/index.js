@@ -8612,7 +8612,7 @@ function run() {
   ${fileRegexps.map(([path, matches]) => {
             return `### ${path}
 | Pattern | Actions |
-| ------- | ------- |\n${matches.map(match => `| *${match}* | [test](${buildTesterUrl(match)}) |`).join("\n")}`;
+| ------- | ------- |\n${matches.map(match => `| <pre lang="regex">${match}</pre> | [test pattern](${buildTesterUrl(match)}) |`).join("\n")}`;
         }).join("\n\n")}`;
         const existingComment = (yield client.issues.listComments({
             owner: issue.owner,

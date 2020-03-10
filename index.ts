@@ -50,7 +50,7 @@ async function run() {
 | Pattern | Actions |
 | ------- | ------- |\n${
       matches.map(match =>
-        `| *${match}* | [test](${buildTesterUrl(match)}) |`
+        `| <pre lang="regex">${match}</pre> | [test pattern](${buildTesterUrl(match)}) |`
       ).join("\n")
     }`;
   }).join("\n\n")}`;
