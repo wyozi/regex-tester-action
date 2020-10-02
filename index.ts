@@ -4,7 +4,7 @@ const util = require("util");
 const fs = require("fs");
 
 const readFile = util.promisify(fs.readFile);
-const META_REGEX_PATTERN = /\/([^\/\\\n]*(?:\\.[^\/\\\n]*)*)\//g;
+const META_REGEX_PATTERN = /\/([^\/\\\n]*(?:\\.[^\/\\\n]*)*)\//g ;
 
 const buildTesterUrl = (pattern: string) => {
   const encoded = encodeURIComponent(pattern);
